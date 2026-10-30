@@ -1,0 +1,1 @@
+- [Long-form coherence](longform-coherence.md) — globally constrained sequential writing, not independent mini-documents; success requires a completed consistency audit.

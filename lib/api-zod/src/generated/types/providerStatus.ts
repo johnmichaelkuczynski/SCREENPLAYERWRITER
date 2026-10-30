@@ -12,4 +12,6 @@ export interface ProviderStatus {
   model: string;
   defaultWords: number;
   maxWords: number;
+  database?: boolean;
+  databaseError?: string;
 }

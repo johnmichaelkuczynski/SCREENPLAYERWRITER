@@ -11,6 +11,79 @@ tags:
   - name: health
     description: Health operations
 paths:
+  /screenplay/runs:
+    post:
+      operationId: startScreenplayRun
+      summary: Start a database-checkpointed writing job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ScreenplayInput" }
+      responses:
+        "202":
+          description: Run started; save the token to access it
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/WritingRun" }
+  /screenplay/runs/{id}:
+    delete:
+      operationId: eraseScreenplayRun
+      summary: Stop and permanently erase one owned writing job and its checkpoints
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: x-run-token, in: header, required: true, schema: { type: string } }
+      responses:
+        "204":
+          description: Writing job and dependent data erased
+    get:
+      operationId: getScreenplayRun
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: x-run-token, in: header, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: Checkpoint and current writing
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/WritingRun" }
+  /screenplay/runs/{id}/resume:
+    post:
+      operationId: resumeScreenplayRun
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: x-run-token, in: header, required: true, schema: { type: string } }
+      responses:
+        "202":
+          description: Resume from saved checkpoints
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/WritingRun" }
+  /screenplay/runs/{id}/cancel:
+    post:
+      operationId: cancelScreenplayRun
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: x-run-token, in: header, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: Stopped with checkpoints preserved
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/WritingRun" }
+  /screenplay/runs/{id}/suspend:
+    post:
+      operationId: suspendScreenplayRun
+      summary: Suspend writing and save the current output as a durable snapshot
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: x-run-token, in: header, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: Suspended with output saved
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/WritingRun" }
   /screenplay/status:
     get:
       operationId: getScreenplayStatus
@@ -86,16 +159,37 @@ components:
         model: { type: string }
         defaultWords: { type: integer }
         maxWords: { type: integer }
+        database: { type: boolean }
+        databaseError: { type: string }
+    WritingRun:
+      type: object
+      required: [id, status, progress, text, wordCount, targetWords, sectionsCompleted, totalSections, sourceChunks, canResume, evidence]
+      properties:
+        id: { type: string }
+        token: { type: string }
+        status: { type: string }
+        progress: { type: string }
+        text: { type: string }
+        savedText: { type: string }
+        wordCount: { type: integer }
+        targetWords: { type: integer }
+        sectionsCompleted: { type: integer }
+        totalSections: { type: integer }
+        sourceChunks: { type: integer }
+        canResume: { type: boolean }
+        error: { type: string }
+        evidence: { type: array, items: { type: string } }
+        validation: { type: string }
     ScreenplayInput:
       type: object
       required: [mode, instructions]
       properties:
         mode: { type: string, enum: [scratch, adapt] }
         instructions: { type: string, maxLength: 20000 }
-        originalText: { type: string, maxLength: 120000 }
-        styleSample: { type: string, maxLength: 60000 }
-        contentSource: { type: string, maxLength: 120000 }
-        currentDraft: { type: string, maxLength: 120000 }
+        originalText: { type: string, maxLength: 1000000 }
+        styleSample: { type: string, maxLength: 1000000 }
+        contentSource: { type: string, maxLength: 1000000 }
+        currentDraft: { type: string, maxLength: 1000000 }
         revisionInstructions: { type: string, maxLength: 20000 }
     DocumentInput:
       type: object

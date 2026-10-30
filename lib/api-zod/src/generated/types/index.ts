@@ -12,3 +12,4 @@ export * from './healthStatus';
 export * from './providerStatus';
 export * from './screenplayInput';
 export * from './screenplayInputMode';
+export * from './writingRun';

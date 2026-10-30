@@ -29,7 +29,8 @@ import type {
   DocumentText,
   HealthStatus,
   ProviderStatus,
-  ScreenplayInput
+  ScreenplayInput,
+  WritingRun
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -58,6 +59,473 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+export const getStartScreenplayRunUrl = () => {
+
+
+
+
+  return `/api/screenplay/runs`
+}
+
+/**
+ * @summary Start a database-checkpointed writing job
+ */
+export const startScreenplayRun = async (screenplayInput: ScreenplayInput, options?: Parameters<typeof customFetch>[1]): Promise<WritingRun> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<WritingRun>(getStartScreenplayRunUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(screenplayInput)
+  }
+);}
+
+
+
+
+
+export const getStartScreenplayRunMutationKey = () => ['startScreenplayRun'] as const;
+
+export const getStartScreenplayRunMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof startScreenplayRun>>, TError,StartScreenplayRunMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof startScreenplayRun>>, TError,StartScreenplayRunMutationVariables, TContext> => {
+
+const mutationKey = getStartScreenplayRunMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof startScreenplayRun>>, StartScreenplayRunMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  startScreenplayRun(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type StartScreenplayRunMutationResult = NonNullable<Awaited<ReturnType<typeof startScreenplayRun>>>
+    export type StartScreenplayRunMutationBody = BodyType<ScreenplayInput>
+    export type StartScreenplayRunMutationError = ErrorType<unknown>
+    export type StartScreenplayRunMutationVariables = {data: BodyType<ScreenplayInput>}
+
+    /**
+ * @summary Start a database-checkpointed writing job
+ */
+export const useStartScreenplayRun = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof startScreenplayRun>>, TError,StartScreenplayRunMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof startScreenplayRun>>,
+        TError,
+        StartScreenplayRunMutationVariables,
+        TContext
+      > => {
+      return useMutation(getStartScreenplayRunMutationOptions(options), queryClient);
+    }
+
+export const getEraseScreenplayRunUrl = (id: string,) => {
+
+
+
+
+  return `/api/screenplay/runs/${id}`
+}
+
+/**
+ * @summary Stop and permanently erase one owned writing job and its checkpoints
+ */
+export const eraseScreenplayRun = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getEraseScreenplayRunUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getEraseScreenplayRunMutationKey = () => ['eraseScreenplayRun'] as const;
+
+export const getEraseScreenplayRunMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof eraseScreenplayRun>>, TError,EraseScreenplayRunMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof eraseScreenplayRun>>, TError,EraseScreenplayRunMutationVariables, TContext> => {
+
+const mutationKey = getEraseScreenplayRunMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof eraseScreenplayRun>>, EraseScreenplayRunMutationVariables> = (props) => {
+          const {id} = props ?? {};
+
+          return  eraseScreenplayRun(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type EraseScreenplayRunMutationResult = NonNullable<Awaited<ReturnType<typeof eraseScreenplayRun>>>
+
+    export type EraseScreenplayRunMutationError = ErrorType<unknown>
+    export type EraseScreenplayRunMutationVariables = {id: string}
+
+    /**
+ * @summary Stop and permanently erase one owned writing job and its checkpoints
+ */
+export const useEraseScreenplayRun = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof eraseScreenplayRun>>, TError,EraseScreenplayRunMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof eraseScreenplayRun>>,
+        TError,
+        EraseScreenplayRunMutationVariables,
+        TContext
+      > => {
+      return useMutation(getEraseScreenplayRunMutationOptions(options), queryClient);
+    }
+
+export const getGetScreenplayRunUrl = (id: string,) => {
+
+
+
+
+  return `/api/screenplay/runs/${id}`
+}
+
+export const getScreenplayRun = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<WritingRun> => {
+
+  return customFetch<WritingRun>(getGetScreenplayRunUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetScreenplayRunQueryKey = (id: string,) => {
+    return [
+    `/api/screenplay/runs/${id}`
+    ] as const;
+    }
+
+
+export const getGetScreenplayRunQueryOptions = <TData = Awaited<ReturnType<typeof getScreenplayRun>>, TError = ErrorType<unknown>>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getScreenplayRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetScreenplayRunQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getScreenplayRun>>> = ({ signal }) => getScreenplayRun(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getScreenplayRun>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetScreenplayRunQueryResult = NonNullable<Awaited<ReturnType<typeof getScreenplayRun>>>
+export type GetScreenplayRunQueryError = ErrorType<unknown>
+
+
+export function useGetScreenplayRun<TData = Awaited<ReturnType<typeof getScreenplayRun>>, TError = ErrorType<unknown>>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getScreenplayRun>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getScreenplayRun>>,
+          TError,
+          Awaited<ReturnType<typeof getScreenplayRun>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetScreenplayRun<TData = Awaited<ReturnType<typeof getScreenplayRun>>, TError = ErrorType<unknown>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getScreenplayRun>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getScreenplayRun>>,
+          TError,
+          Awaited<ReturnType<typeof getScreenplayRun>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetScreenplayRun<TData = Awaited<ReturnType<typeof getScreenplayRun>>, TError = ErrorType<unknown>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getScreenplayRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useGetScreenplayRun<TData = Awaited<ReturnType<typeof getScreenplayRun>>, TError = ErrorType<unknown>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getScreenplayRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetScreenplayRunQueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getResumeScreenplayRunUrl = (id: string,) => {
+
+
+
+
+  return `/api/screenplay/runs/${id}/resume`
+}
+
+export const resumeScreenplayRun = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<WritingRun> => {
+
+  return customFetch<WritingRun>(getResumeScreenplayRunUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getResumeScreenplayRunMutationKey = () => ['resumeScreenplayRun'] as const;
+
+export const getResumeScreenplayRunMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof resumeScreenplayRun>>, TError,ResumeScreenplayRunMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof resumeScreenplayRun>>, TError,ResumeScreenplayRunMutationVariables, TContext> => {
+
+const mutationKey = getResumeScreenplayRunMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof resumeScreenplayRun>>, ResumeScreenplayRunMutationVariables> = (props) => {
+          const {id} = props ?? {};
+
+          return  resumeScreenplayRun(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ResumeScreenplayRunMutationResult = NonNullable<Awaited<ReturnType<typeof resumeScreenplayRun>>>
+
+    export type ResumeScreenplayRunMutationError = ErrorType<unknown>
+    export type ResumeScreenplayRunMutationVariables = {id: string}
+
+    export const useResumeScreenplayRun = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof resumeScreenplayRun>>, TError,ResumeScreenplayRunMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof resumeScreenplayRun>>,
+        TError,
+        ResumeScreenplayRunMutationVariables,
+        TContext
+      > => {
+      return useMutation(getResumeScreenplayRunMutationOptions(options), queryClient);
+    }
+
+export const getCancelScreenplayRunUrl = (id: string,) => {
+
+
+
+
+  return `/api/screenplay/runs/${id}/cancel`
+}
+
+export const cancelScreenplayRun = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<WritingRun> => {
+
+  return customFetch<WritingRun>(getCancelScreenplayRunUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getCancelScreenplayRunMutationKey = () => ['cancelScreenplayRun'] as const;
+
+export const getCancelScreenplayRunMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelScreenplayRun>>, TError,CancelScreenplayRunMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof cancelScreenplayRun>>, TError,CancelScreenplayRunMutationVariables, TContext> => {
+
+const mutationKey = getCancelScreenplayRunMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof cancelScreenplayRun>>, CancelScreenplayRunMutationVariables> = (props) => {
+          const {id} = props ?? {};
+
+          return  cancelScreenplayRun(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CancelScreenplayRunMutationResult = NonNullable<Awaited<ReturnType<typeof cancelScreenplayRun>>>
+
+    export type CancelScreenplayRunMutationError = ErrorType<unknown>
+    export type CancelScreenplayRunMutationVariables = {id: string}
+
+    export const useCancelScreenplayRun = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelScreenplayRun>>, TError,CancelScreenplayRunMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof cancelScreenplayRun>>,
+        TError,
+        CancelScreenplayRunMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCancelScreenplayRunMutationOptions(options), queryClient);
+    }
+
+export const getSuspendScreenplayRunUrl = (id: string,) => {
+
+
+
+
+  return `/api/screenplay/runs/${id}/suspend`
+}
+
+/**
+ * @summary Suspend writing and save the current output as a durable snapshot
+ */
+export const suspendScreenplayRun = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<WritingRun> => {
+
+  return customFetch<WritingRun>(getSuspendScreenplayRunUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getSuspendScreenplayRunMutationKey = () => ['suspendScreenplayRun'] as const;
+
+export const getSuspendScreenplayRunMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof suspendScreenplayRun>>, TError,SuspendScreenplayRunMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof suspendScreenplayRun>>, TError,SuspendScreenplayRunMutationVariables, TContext> => {
+
+const mutationKey = getSuspendScreenplayRunMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof suspendScreenplayRun>>, SuspendScreenplayRunMutationVariables> = (props) => {
+          const {id} = props ?? {};
+
+          return  suspendScreenplayRun(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SuspendScreenplayRunMutationResult = NonNullable<Awaited<ReturnType<typeof suspendScreenplayRun>>>
+
+    export type SuspendScreenplayRunMutationError = ErrorType<unknown>
+    export type SuspendScreenplayRunMutationVariables = {id: string}
+
+    /**
+ * @summary Suspend writing and save the current output as a durable snapshot
+ */
+export const useSuspendScreenplayRun = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof suspendScreenplayRun>>, TError,SuspendScreenplayRunMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof suspendScreenplayRun>>,
+        TError,
+        SuspendScreenplayRunMutationVariables,
+        TContext
+      > => {
+      return useMutation(getSuspendScreenplayRunMutationOptions(options), queryClient);
+    }
 
 export const getGetScreenplayStatusUrl = () => {
 

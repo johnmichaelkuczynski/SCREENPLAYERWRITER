@@ -11,6 +11,26 @@ export interface ProviderStatus {
   model: string;
   defaultWords: number;
   maxWords: number;
+  database?: boolean;
+  databaseError?: string;
+}
+
+export interface WritingRun {
+  id: string;
+  token?: string;
+  status: string;
+  progress: string;
+  text: string;
+  savedText?: string;
+  wordCount: number;
+  targetWords: number;
+  sectionsCompleted: number;
+  totalSections: number;
+  sourceChunks: number;
+  canResume: boolean;
+  error?: string;
+  evidence: string[];
+  validation?: string;
 }
 
 export type ScreenplayInputMode = typeof ScreenplayInputMode[keyof typeof ScreenplayInputMode];
@@ -25,13 +45,13 @@ export interface ScreenplayInput {
   mode: ScreenplayInputMode;
   /** @maxLength 20000 */
   instructions: string;
-  /** @maxLength 120000 */
+  /** @maxLength 1000000 */
   originalText?: string;
-  /** @maxLength 60000 */
+  /** @maxLength 1000000 */
   styleSample?: string;
-  /** @maxLength 120000 */
+  /** @maxLength 1000000 */
   contentSource?: string;
-  /** @maxLength 120000 */
+  /** @maxLength 1000000 */
   currentDraft?: string;
   /** @maxLength 20000 */
   revisionInstructions?: string;

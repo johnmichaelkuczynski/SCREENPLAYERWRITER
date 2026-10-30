@@ -1,12 +1,12 @@
 import type { ScreenplayInput } from "@workspace/api-zod";
+import { parseRequestedWords } from "./longform-text";
 
 export const DEFAULT_WORDS = 1000;
-export const MAX_WORDS = 3000;
+export const MAX_WORDS = 30000;
 
 export function requestedWords(input: ScreenplayInput): number | undefined {
   const text = `${input.revisionInstructions || ""}\n${input.instructions}`;
-  const match = /(\d[\d,]*)\s*(?:-\s*)?words?\b/i.exec(text);
-  return match ? Number(match[1]!.replaceAll(",", "")) : undefined;
+  return parseRequestedWords(text);
 }
 
 export function buildMessages(input: ScreenplayInput) {

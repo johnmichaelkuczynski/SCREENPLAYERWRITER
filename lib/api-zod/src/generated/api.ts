@@ -9,6 +9,177 @@ import * as zod from 'zod';
 
 
 /**
+ * @summary Start a database-checkpointed writing job
+ */
+export const startScreenplayRunBodyInstructionsMax = 20000;
+
+export const startScreenplayRunBodyOriginalTextMax = 1000000;
+
+export const startScreenplayRunBodyStyleSampleMax = 1000000;
+
+export const startScreenplayRunBodyContentSourceMax = 1000000;
+
+export const startScreenplayRunBodyCurrentDraftMax = 1000000;
+
+export const startScreenplayRunBodyRevisionInstructionsMax = 20000;
+
+
+
+export const StartScreenplayRunBody = zod.object({
+  "mode": zod.enum(['scratch', 'adapt']),
+  "instructions": zod.string().max(startScreenplayRunBodyInstructionsMax),
+  "originalText": zod.string().max(startScreenplayRunBodyOriginalTextMax).optional(),
+  "styleSample": zod.string().max(startScreenplayRunBodyStyleSampleMax).optional(),
+  "contentSource": zod.string().max(startScreenplayRunBodyContentSourceMax).optional(),
+  "currentDraft": zod.string().max(startScreenplayRunBodyCurrentDraftMax).optional(),
+  "revisionInstructions": zod.string().max(startScreenplayRunBodyRevisionInstructionsMax).optional()
+})
+
+export const StartScreenplayRunResponse = zod.object({
+  "id": zod.string(),
+  "token": zod.string().optional(),
+  "status": zod.string(),
+  "progress": zod.string(),
+  "text": zod.string(),
+  "savedText": zod.string().optional(),
+  "wordCount": zod.number().int(),
+  "targetWords": zod.number().int(),
+  "sectionsCompleted": zod.number().int(),
+  "totalSections": zod.number().int(),
+  "sourceChunks": zod.number().int(),
+  "canResume": zod.boolean(),
+  "error": zod.string().optional(),
+  "evidence": zod.array(zod.string()),
+  "validation": zod.string().optional()
+})
+
+
+/**
+ * @summary Stop and permanently erase one owned writing job and its checkpoints
+ */
+export const EraseScreenplayRunParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const EraseScreenplayRunHeader = zod.object({
+  "x-run-token": zod.string()
+})
+
+export const EraseScreenplayRunResponse = zod.void()
+
+
+export const GetScreenplayRunParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const GetScreenplayRunHeader = zod.object({
+  "x-run-token": zod.string()
+})
+
+export const GetScreenplayRunResponse = zod.object({
+  "id": zod.string(),
+  "token": zod.string().optional(),
+  "status": zod.string(),
+  "progress": zod.string(),
+  "text": zod.string(),
+  "savedText": zod.string().optional(),
+  "wordCount": zod.number().int(),
+  "targetWords": zod.number().int(),
+  "sectionsCompleted": zod.number().int(),
+  "totalSections": zod.number().int(),
+  "sourceChunks": zod.number().int(),
+  "canResume": zod.boolean(),
+  "error": zod.string().optional(),
+  "evidence": zod.array(zod.string()),
+  "validation": zod.string().optional()
+})
+
+
+export const ResumeScreenplayRunParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const ResumeScreenplayRunHeader = zod.object({
+  "x-run-token": zod.string()
+})
+
+export const ResumeScreenplayRunResponse = zod.object({
+  "id": zod.string(),
+  "token": zod.string().optional(),
+  "status": zod.string(),
+  "progress": zod.string(),
+  "text": zod.string(),
+  "savedText": zod.string().optional(),
+  "wordCount": zod.number().int(),
+  "targetWords": zod.number().int(),
+  "sectionsCompleted": zod.number().int(),
+  "totalSections": zod.number().int(),
+  "sourceChunks": zod.number().int(),
+  "canResume": zod.boolean(),
+  "error": zod.string().optional(),
+  "evidence": zod.array(zod.string()),
+  "validation": zod.string().optional()
+})
+
+
+export const CancelScreenplayRunParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const CancelScreenplayRunHeader = zod.object({
+  "x-run-token": zod.string()
+})
+
+export const CancelScreenplayRunResponse = zod.object({
+  "id": zod.string(),
+  "token": zod.string().optional(),
+  "status": zod.string(),
+  "progress": zod.string(),
+  "text": zod.string(),
+  "savedText": zod.string().optional(),
+  "wordCount": zod.number().int(),
+  "targetWords": zod.number().int(),
+  "sectionsCompleted": zod.number().int(),
+  "totalSections": zod.number().int(),
+  "sourceChunks": zod.number().int(),
+  "canResume": zod.boolean(),
+  "error": zod.string().optional(),
+  "evidence": zod.array(zod.string()),
+  "validation": zod.string().optional()
+})
+
+
+/**
+ * @summary Suspend writing and save the current output as a durable snapshot
+ */
+export const SuspendScreenplayRunParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const SuspendScreenplayRunHeader = zod.object({
+  "x-run-token": zod.string()
+})
+
+export const SuspendScreenplayRunResponse = zod.object({
+  "id": zod.string(),
+  "token": zod.string().optional(),
+  "status": zod.string(),
+  "progress": zod.string(),
+  "text": zod.string(),
+  "savedText": zod.string().optional(),
+  "wordCount": zod.number().int(),
+  "targetWords": zod.number().int(),
+  "sectionsCompleted": zod.number().int(),
+  "totalSections": zod.number().int(),
+  "sourceChunks": zod.number().int(),
+  "canResume": zod.boolean(),
+  "error": zod.string().optional(),
+  "evidence": zod.array(zod.string()),
+  "validation": zod.string().optional()
+})
+
+
+/**
  * @summary Screenplay provider configuration
  */
 export const GetScreenplayStatusResponse = zod.object({
@@ -16,7 +187,9 @@ export const GetScreenplayStatusResponse = zod.object({
   "provider": zod.string(),
   "model": zod.string(),
   "defaultWords": zod.number().int(),
-  "maxWords": zod.number().int()
+  "maxWords": zod.number().int(),
+  "database": zod.boolean().optional(),
+  "databaseError": zod.string().optional()
 })
 
 
@@ -26,13 +199,13 @@ export const GetScreenplayStatusResponse = zod.object({
  */
 export const generateScreenplayBodyInstructionsMax = 20000;
 
-export const generateScreenplayBodyOriginalTextMax = 120000;
+export const generateScreenplayBodyOriginalTextMax = 1000000;
 
-export const generateScreenplayBodyStyleSampleMax = 60000;
+export const generateScreenplayBodyStyleSampleMax = 1000000;
 
-export const generateScreenplayBodyContentSourceMax = 120000;
+export const generateScreenplayBodyContentSourceMax = 1000000;
 
-export const generateScreenplayBodyCurrentDraftMax = 120000;
+export const generateScreenplayBodyCurrentDraftMax = 1000000;
 
 export const generateScreenplayBodyRevisionInstructionsMax = 20000;
 

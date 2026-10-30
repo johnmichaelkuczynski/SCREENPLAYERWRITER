@@ -1,0 +1,16 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "PJojjBbwFiW1ALEdLydwn"
+uri = "file://README.md"
+type = "text"
+title = "Screenplay Writer — Marketing README"
+description = "GitHub-ready marketing README with an overview, audience, feature table, generation controls, workflow, and accurate long-form status."
+logical_id = "0671dead-480e-4082-ba19-bcd1cb3238fc"
+content_hash = "sha256:fc6cb257671188af28ea8e9fdb5197bb0544f5e5dd52108fcf10908b1f371275"
+size = 6309
+mtime_ms = 1793352504454
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:5f39fec9-10a5-449d-8875-6b3edd05234a/0671dead-480e-4082-ba19-bcd1cb3238fc/916d3f11-3ed3-41fe-b18a-341874d22cf4"
+storage_version_token = "1793352509520956"
+content_type = "text/markdown"

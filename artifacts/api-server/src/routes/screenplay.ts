@@ -1,17 +1,26 @@
 import { Router, type IRouter } from "express";
 import { GenerateScreenplayBody, ExtractDocumentBody, ExtractDocumentResponse, GetScreenplayStatusResponse } from "@workspace/api-zod";
 import { buildMessages, DEFAULT_WORDS, MAX_WORDS, readProviderEvents, requestedWords } from "../lib/screenplay";
+import writingRunsRouter from "./writing-runs";
+import { pool, wordCount } from "../lib/longform-store";
 
 const router: IRouter = Router();
 let activeGenerations = 0;
+router.use("/runs", writingRunsRouter);
 
-router.get("/status", (_req, res) => {
+router.get("/status", async (_req, res): Promise<void> => {
+  let database = false;
+  if (process.env.NEONPOSTGRES_API_KEY) {
+    try { await pool.query("SELECT id FROM screenplay_runs LIMIT 0"); database = true; } catch { /* sanitized status only */ }
+  }
   res.json(GetScreenplayStatusResponse.parse({
     configured: Boolean(process.env.DEEPSEEK_API_KEY),
     provider: "DeepSeek",
     model: "deepseek-chat",
     defaultWords: DEFAULT_WORDS,
     maxWords: MAX_WORDS,
+    database,
+    ...(!database ? { databaseError: "Neon checkpoints are unavailable. Check the database connection." } : {}),
   }));
 });
 
@@ -36,6 +45,10 @@ router.post("/generate", async (req, res): Promise<void> => {
     return;
   }
   const words = requestedWords(input);
+  if ((words || 0) > 3000) {
+    res.status(400).json({ error: "Use the checkpointed /screenplay/runs endpoint for long screenplays." });
+    return;
+  }
   if (words !== undefined && (words < 50 || words > MAX_WORDS)) {
     res.status(400).json({ error: `This version supports short screenplays of 50–${MAX_WORDS.toLocaleString()} words. Adjust the length in your instructions.` });
     return;
@@ -157,8 +170,8 @@ router.post("/extract", async (req, res): Promise<void> => {
       res.status(400).json({ error: "No readable text was found. For scanned PDFs, paste the text or upload a text-based document." });
       return;
     }
-    if (text.length > 120000) {
-      res.status(400).json({ error: "This document exceeds 120,000 characters. Upload a shorter excerpt." });
+    if (text.length > 1000000 || wordCount(text) > 30000) {
+      res.status(400).json({ error: "This document exceeds 30,000 words or 1,000,000 characters. Upload a shorter excerpt." });
       return;
     }
     res.json(ExtractDocumentResponse.parse({ text, filename }));

@@ -11,13 +11,13 @@ export interface ScreenplayInput {
   mode: ScreenplayInputMode;
   /** @maxLength 20000 */
   instructions: string;
-  /** @maxLength 120000 */
+  /** @maxLength 1000000 */
   originalText?: string;
-  /** @maxLength 60000 */
+  /** @maxLength 1000000 */
   styleSample?: string;
-  /** @maxLength 120000 */
+  /** @maxLength 1000000 */
   contentSource?: string;
-  /** @maxLength 120000 */
+  /** @maxLength 1000000 */
   currentDraft?: string;
   /** @maxLength 20000 */
   revisionInstructions?: string;

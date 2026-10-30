@@ -2,13 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronDown, ChevronUp, Minus, Square, X, Maximize2 } from "lucide-react";
 import { countWords } from "@/lib/stream";
 
-export type RunStatus = "idle" | "running" | "done" | "stopped" | "error";
+export type RunStatus = "idle" | "running" | "done" | "stopped" | "suspended" | "error";
 
 export function StreamWindow({
-  open, title, text, status, error, onStop, onClose,
+  open, title, text, status, error, onStop, onClose, progress, onSuspend, onRestart, controlsDisabled,
 }: {
   open: boolean; title: string; text: string; status: RunStatus; error: string | null;
+  progress?: string;
   onStop: () => void; onClose: () => void;
+  onSuspend: () => void; onRestart: () => void; controlsDisabled?: boolean;
 }) {
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [collapsed, setCollapsed] = useState(false);
@@ -31,7 +33,7 @@ export function StreamWindow({
   if (!open) return null;
 
   const words = countWords(text);
-  const label = { idle: "Waiting", running: "Writing", done: "Finished", stopped: "Stopped", error: "Error" }[status];
+  const label = { idle: "Waiting", running: "Writing", done: "Finished", stopped: "Stopped", suspended: "Suspended and saved", error: "Error" }[status];
   const dot = status === "running" ? "bg-amber-500 animate-pulse" : status === "error" ? "bg-destructive" : status === "done" ? "bg-emerald-600" : "bg-muted-foreground";
 
   if (minimized) {
@@ -68,7 +70,7 @@ export function StreamWindow({
         <span className="script text-xs opacity-80 ml-1" data-testid="text-stream-status">{label} - {words} words</span>
         <div className="ml-auto flex items-center">
           {status === "running" && (
-            <button onClick={onStop} data-testid="button-stop" title="Stop"
+            <button onClick={onStop} disabled={controlsDisabled} data-testid="button-stop" title="Stop"
               className="mr-1 inline-flex items-center gap-1 rounded bg-primary-foreground/15 px-2 py-0.5 text-xs hover:bg-primary-foreground/30">
               <Square className="h-3 w-3 fill-current" /> Stop
             </button>
@@ -86,8 +88,14 @@ export function StreamWindow({
           )}
         </div>
       </div>
+      {status === "running" && <div className="flex flex-wrap gap-2 border-b px-3 py-2">
+        <button disabled={controlsDisabled} onClick={onSuspend} data-testid="button-suspend" className="rounded border border-primary px-2 py-1 text-xs text-primary disabled:opacity-40">Suspend and save</button>
+        <button disabled={controlsDisabled} onClick={onRestart} data-testid="button-restart" className="rounded border px-2 py-1 text-xs disabled:opacity-40">Stop and start again</button>
+      </div>}
+      {status === "suspended" && <p className="border-b px-3 py-2 text-xs text-primary">Saved output is available to copy or download. Resume continues from the last completed checkpoint; an unfinished section may be rewritten.</p>}
       {!collapsed && (
         <>
+          {progress && <div className="px-3 py-2 text-xs text-primary" data-testid="text-stream-progress">{progress}</div>}
           {error && <div className="bg-destructive/10 px-3 py-2 text-xs text-destructive" data-testid="text-stream-error">{error}</div>}
           <div ref={bodyRef} className="paper flex-1 overflow-auto px-5 py-4">
             <pre className={`script whitespace-pre-wrap text-[13.5px] leading-relaxed ${status === "running" ? "caret" : ""}`} data-testid="text-stream">
