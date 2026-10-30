@@ -1,6 +1,6 @@
-# [Project name]
+# Screenplay Writer
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A two-mode short-screenplay writing app using DeepSeek, with live streaming and iterative revisions.
 
 ## Run & Operate
 
@@ -9,7 +9,7 @@ _Replace the heading above with the project's name, and this line with one sente
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- Required secret: `DEEPSEEK_API_KEY` — used only by the API server.
 
 ## Stack
 
@@ -22,23 +22,35 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- Frontend: `artifacts/screenplay-writer`
+- Writing and document extraction: `artifacts/api-server/src/routes/screenplay.ts`
+- Prompt and upstream streaming: `artifacts/api-server/src/lib/screenplay.ts`
+- API contract: `lib/api-spec/openapi.yaml`
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Drafts and inputs stay in the browser; no account or shared document database is required for this initial tool.
+- Uploaded documents are extracted in memory, not retained as files.
+- The provider status indicates configuration, not a successful live generation.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- Write from instructions or adapt existing text.
+- Optional pasted/uploaded style samples and content sources.
+- Revise the current screenplay instead of starting from scratch.
+- Stream writing into a movable, collapsible, resizable popup.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Use DeepSeek as the LLM.
+- Keep the interface simple, with labeled boxes for each input and output.
+- The user explicitly limits this first version to short screenplays; do not implement long-form generation until they provide further instructions.
+- Default to approximately 1,000 words when no length is supplied naturally in instructions.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Regenerate API hooks and Zod schemas after changing the OpenAPI contract.
+- Never expose or log the DeepSeek API key.
 
 ## Pointers
 

@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Screenplay Writer"
+description = "Write and adapt short screenplays with DeepSeek, optional style samples and source material, iterative revisions, and a live movable streaming window."
+version = "1.0.0"
+id = "artifacts/screenplay-writer"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23057
+
+[services.development]
+run = "pnpm --filter @workspace/screenplay-writer run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/screenplay-writer", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/screenplay-writer/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23057"
+BASE_PATH = "/"

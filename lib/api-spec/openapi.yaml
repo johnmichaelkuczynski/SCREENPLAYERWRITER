@@ -11,6 +11,57 @@ tags:
   - name: health
     description: Health operations
 paths:
+  /screenplay/status:
+    get:
+      operationId: getScreenplayStatus
+      summary: Screenplay provider configuration
+      responses:
+        "200":
+          description: Configuration status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProviderStatus"
+  /screenplay/generate:
+    post:
+      operationId: generateScreenplay
+      summary: Stream a screenplay or revision as SSE
+      description: "Use fetch with ReadableStream, not the generated mutation. SSE data JSON has type delta with text, type done with wordCount and truncated, or type error with error."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScreenplayInput"
+      responses:
+        "200":
+          description: SSE stream
+          content:
+            text/event-stream:
+              schema: { type: string }
+        "400":
+          description: Invalid instructions
+        "503":
+          description: Provider not configured
+  /screenplay/extract:
+    post:
+      operationId: extractDocument
+      summary: Extract text from uploaded TXT, MD, PDF, or DOCX
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DocumentInput"
+      responses:
+        "200":
+          description: Extracted text
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DocumentText"
+        "400":
+          description: Unsupported or unreadable file
   /healthz:
     get:
       operationId: healthCheck
@@ -26,6 +77,38 @@ paths:
                 $ref: "#/components/schemas/HealthStatus"
 components:
   schemas:
+    ProviderStatus:
+      type: object
+      required: [configured, provider, model, defaultWords, maxWords]
+      properties:
+        configured: { type: boolean }
+        provider: { type: string }
+        model: { type: string }
+        defaultWords: { type: integer }
+        maxWords: { type: integer }
+    ScreenplayInput:
+      type: object
+      required: [mode, instructions]
+      properties:
+        mode: { type: string, enum: [scratch, adapt] }
+        instructions: { type: string, maxLength: 20000 }
+        originalText: { type: string, maxLength: 120000 }
+        styleSample: { type: string, maxLength: 60000 }
+        contentSource: { type: string, maxLength: 120000 }
+        currentDraft: { type: string, maxLength: 120000 }
+        revisionInstructions: { type: string, maxLength: 20000 }
+    DocumentInput:
+      type: object
+      required: [filename, base64]
+      properties:
+        filename: { type: string, minLength: 1, maxLength: 255 }
+        base64: { type: string, maxLength: 11200000 }
+    DocumentText:
+      type: object
+      required: [text, filename]
+      properties:
+        text: { type: string }
+        filename: { type: string }
     HealthStatus:
       type: object
       properties:
